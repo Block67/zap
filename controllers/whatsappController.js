@@ -1,11 +1,12 @@
-import {
+import baileys from '@whiskeysockets/baileys';
+const {
   makeWASocket,
   useMultiFileAuthState,
   DisconnectReason,
   fetchLatestBaileysVersion,
   makeInMemoryStore,
   delay
-} from '@whiskeysockets/baileys';
+} = baileys;
 
 import { Boom } from '@hapi/boom';
 import pino from 'pino';
