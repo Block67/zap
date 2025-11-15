@@ -1,4 +1,3 @@
-
 import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
@@ -10,6 +9,12 @@ import whatsappRoutes from './routes/whatsapp.js';
 
 const app = express();
 const server = createServer(app);
+
+// HOST + PORT obligatoires pour Docker / Coolify
+const HOST = process.env.HOST || "0.0.0.0";
+const PORT = process.env.PORT || 3000;
+
+// Configuration Socket.io
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -17,9 +22,7 @@ const io = new Server(server, {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-
-// Middleware
+// Middleware global
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -28,7 +31,7 @@ app.use(session({
   secret: 'whatsapp-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 60000 * 60 * 24 }
+  cookie: { maxAge: 60000 * 60 * 24 } // 24h
 }));
 
 app.use(flash());
@@ -39,15 +42,16 @@ app.set('io', io);
 // Routes
 app.use('/', whatsappRoutes);
 
+// Route de santé pour test
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     message: 'WhatsApp Baileys Server is running',
     timestamp: new Date().toISOString()
   });
 });
 
-// Socket.io pour les événements temps réel
+// Socket.io events
 io.on('connection', (socket) => {
   console.log(chalk.green('Client connecté:', socket.id));
   
@@ -56,12 +60,14 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
+// Lancement du serveur
+server.listen(PORT, HOST, () => {
   console.log(chalk.blue.bold(`
 ╔════════════════════════════════════════╗
 ║  🚀 WhatsApp Baileys Server Running    ║
+║  📡 Host: ${HOST}                         ║
 ║  📡 Port: ${PORT}                         ║
-║  🌐 http://localhost:${PORT}              ║
+║  🌐 http://${HOST}:${PORT}               ║
 ╚════════════════════════════════════════╝
   `));
 });
