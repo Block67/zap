@@ -1,0 +1,13 @@
+{
+  "ignore": [
+    "auth_sessions/**",
+    "*.log",
+    "node_modules/**"
+  ],
+  "watch": [
+    "server.js",
+    "routes/**",
+    "controllers/**"
+  ],
+  "ext": "js,json"
+}
